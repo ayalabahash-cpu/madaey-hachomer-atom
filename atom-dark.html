@@ -460,6 +460,103 @@ footer{
   max-width:var(--maxw); margin:40px auto 0;
 }
 footer b{color:var(--ink-dim)}
+
+/* ============================================================
+   מפת הקורס — לוח צד עם כל הפרקים והשיעורים
+   ============================================================ */
+.map-toggle{
+  position:fixed; top:14px; left:20px; z-index:46;
+  display:flex; align-items:center; gap:9px;
+  background:var(--surface); border:1px solid var(--line); border-radius:999px;
+  padding:9px 16px; font-family:var(--font-display); font-size:.85rem; color:var(--ink);
+  cursor:pointer; box-shadow:0 8px 24px rgba(0,0,0,.35); transition:.2s;
+}
+.map-toggle:hover{border-color:var(--cyan)}
+.map-toggle svg{width:16px; height:16px; flex:none}
+.map-overlay{
+  position:fixed; inset:0; z-index:58; background:rgba(5,7,13,.6);
+  opacity:0; pointer-events:none; transition:opacity .25s;
+}
+.map-overlay.open{opacity:1; pointer-events:auto}
+.map-drawer{
+  position:fixed; top:0; right:0; height:100%; width:min(88vw,360px); z-index:59;
+  background:var(--bg-soft); border-left:1px solid var(--line);
+  box-shadow:-24px 0 60px rgba(0,0,0,.45);
+  transform:translateX(100%); transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  display:flex; flex-direction:column;
+}
+.map-drawer.open{transform:translateX(0)}
+.map-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:22px 22px 16px; border-bottom:1px solid var(--line); flex:none;
+}
+.map-head h3{font-family:var(--font-display); font-size:1.15rem; color:var(--ink)}
+.map-close{
+  background:none; border:1px solid var(--line); color:var(--ink-dim); border-radius:8px;
+  width:32px; height:32px; cursor:pointer; font-size:1rem;
+}
+.map-close:hover{border-color:var(--pink); color:var(--pink)}
+.map-list{overflow-y:auto; padding:14px 16px 30px; flex:1}
+.map-chapter{border-bottom:1px solid var(--line); padding:6px 0}
+.map-chapter-btn{
+  width:100%; display:flex; align-items:center; gap:10px; text-align:right;
+  background:none; border:none; color:var(--ink); font-family:var(--font-body); font-weight:600;
+  font-size:.98rem; padding:12px 6px; cursor:pointer; border-radius:8px;
+}
+.map-chapter-btn:not(.disabled):hover{background:var(--surface)}
+.map-chapter-btn.disabled{color:var(--ink-faint); cursor:default}
+.map-badge{
+  flex:none; font-family:var(--font-display); font-size:.68rem; padding:3px 10px; border-radius:999px;
+}
+.map-badge.available{background:var(--s2-wash); color:var(--cyan); border:1px solid var(--cyan)}
+.map-badge.soon{background:var(--surface-2); color:var(--ink-faint); border:1px solid var(--line)}
+.map-sub{display:flex; flex-direction:column; gap:2px; padding:2px 6px 10px 6px}
+.map-sub a{
+  display:block; padding:9px 14px; border-radius:8px; color:var(--ink-dim); text-decoration:none;
+  font-size:.92rem; border-right:2px solid transparent;
+}
+.map-sub a:hover{background:var(--surface); color:var(--ink); border-right-color:var(--cyan)}
+
+/* ============================================================
+   מצב עריכה למורה — טקסט ניתן לעריכה + שמירה מקומית
+   ============================================================ */
+.edit-toggle{
+  position:fixed; bottom:20px; left:20px; z-index:46;
+  display:flex; align-items:center; gap:9px;
+  background:var(--amber); color:#1b1304; border:none; border-radius:999px;
+  padding:12px 20px; font-family:var(--font-display); font-weight:600; font-size:.9rem;
+  cursor:pointer; box-shadow:0 10px 28px rgba(247,183,51,.35); transition:.2s;
+}
+.edit-toggle:hover{filter:brightness(1.08)}
+.edit-toggle.active{background:var(--surface); color:var(--amber); border:1.5px solid var(--amber)}
+body.edit-mode [data-ek]{
+  outline:1.5px dashed rgba(247,183,51,.55); outline-offset:3px; border-radius:6px;
+  cursor:text; transition:outline-color .15s, background .15s;
+}
+body.edit-mode [data-ek]:hover{outline-color:var(--amber)}
+body.edit-mode [data-ek]:focus{
+  outline:2px solid var(--amber); background:rgba(247,183,51,.08); outline-offset:3px;
+}
+.edit-bar{
+  position:fixed; bottom:0; right:0; left:0; z-index:57; display:none;
+  justify-content:center; gap:10px; flex-wrap:wrap;
+  padding:14px 18px; background:var(--surface); border-top:1px solid var(--line);
+  box-shadow:0 -10px 30px rgba(0,0,0,.4);
+}
+body.edit-mode .edit-bar{display:flex}
+.edit-bar button{
+  font-family:var(--font-display); font-size:.85rem; border-radius:999px; padding:10px 18px;
+  cursor:pointer; border:1px solid var(--line); background:var(--surface-2); color:var(--ink-dim);
+}
+.edit-bar button:hover{color:var(--ink); border-color:var(--cyan)}
+.edit-bar button.danger:hover{border-color:var(--pink); color:var(--pink)}
+.edit-note{
+  position:fixed; bottom:72px; left:50%; transform:translateX(-50%); z-index:57;
+  background:var(--surface); border:1px solid var(--cyan); color:var(--ink); border-radius:10px;
+  padding:9px 18px; font-size:.85rem; opacity:0; pointer-events:none; transition:opacity .3s;
+}
+.edit-note.show{opacity:1}
+body.edit-mode main{padding-bottom:70px}
 </style>
 </head>
 <body>
@@ -471,6 +568,57 @@ footer b{color:var(--ink-dim)}
 
 <nav class="dots" id="dots" aria-label="ניווט מקטעים"></nav>
 <div class="stage-pill" id="stagePill"><span class="dot" id="stagePillDot"></span><span id="stagePillText">פתיחת הפרק</span></div>
+
+<!-- ===================== מפת הקורס (לוח צד) ===================== -->
+<button class="map-toggle" id="mapToggle" aria-haspopup="true" aria-expanded="false" aria-controls="mapDrawer">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+  מפת הקורס
+</button>
+<div class="map-overlay" id="mapOverlay"></div>
+<aside class="map-drawer" id="mapDrawer" aria-hidden="true">
+  <div class="map-head">
+    <h3>מפת הקורס · מדעי החומר</h3>
+    <button class="map-close" id="mapClose" aria-label="סגור מפה">✕</button>
+  </div>
+  <nav class="map-list">
+    <div class="map-chapter">
+      <button class="map-chapter-btn" id="mapCh1Btn" aria-expanded="true">
+        <span class="map-badge available">זמין</span>
+        פרק א׳ · האטום
+      </button>
+      <div class="map-sub" id="mapCh1Sub">
+        <a href="#s-stage-1">1 · פתיחה</a>
+        <a href="#s-stage-2">2 · הקניית הידע</a>
+        <a href="#s-stage-3">3 · תרגול והפעלה</a>
+        <a href="#s-stage-4">4 · סיכום</a>
+      </div>
+    </div>
+    <div class="map-chapter">
+      <div class="map-chapter-btn disabled"><span class="map-badge soon">בקרוב</span>פרק ב׳ · יסוד וטבלה מחזורית</div>
+    </div>
+    <div class="map-chapter">
+      <div class="map-chapter-btn disabled"><span class="map-badge soon">בקרוב</span>פרק ג׳ · מבנה האטום (גרעין, פרוטון, נויטרון, אלקטרון)</div>
+    </div>
+    <div class="map-chapter">
+      <div class="map-chapter-btn disabled"><span class="map-badge soon">בקרוב</span>פרק ד׳ · תרכובות ותערובות</div>
+    </div>
+    <div class="map-chapter">
+      <div class="map-chapter-btn disabled"><span class="map-badge soon">בקרוב</span>פרק ה׳ · הפרדת תערובות (זיקוק, סינון, כרומטוגרפיה)</div>
+    </div>
+  </nav>
+</aside>
+
+<!-- ===================== מצב עריכה למורה ===================== -->
+<button class="edit-toggle" id="editToggle">✏️ מצב עריכה למורה</button>
+<div class="edit-note" id="editNote">נשמר במחשב הזה</div>
+<div class="edit-bar" id="editBar">
+  <button id="editSave">💾 הורד קובץ עדכון</button>
+  <label style="font-family:var(--font-display);font-size:.85rem;border-radius:999px;padding:10px 18px;cursor:pointer;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-dim)">
+    📂 טען קובץ עדכון<input type="file" id="editLoad" accept="application/json" style="display:none">
+  </label>
+  <button id="editReset" class="danger">↺ אפס לטקסט המקורי</button>
+  <button id="editDone">✔️ סיום עריכה</button>
+</div>
 
 <main>
 
@@ -958,6 +1106,136 @@ if (!matchMedia('(prefers-reduced-motion:reduce)').matches){
   initField(); drawField();
   addEventListener('resize', initField);
 }
+
+/* ============================================================
+   מפת הקורס — פתיחה/סגירה
+   ============================================================ */
+const mapToggle = document.getElementById('mapToggle');
+const mapOverlay = document.getElementById('mapOverlay');
+const mapDrawer  = document.getElementById('mapDrawer');
+const mapClose   = document.getElementById('mapClose');
+function openMap(){
+  mapDrawer.classList.add('open'); mapOverlay.classList.add('open');
+  mapDrawer.setAttribute('aria-hidden','false'); mapToggle.setAttribute('aria-expanded','true');
+}
+function closeMap(){
+  mapDrawer.classList.remove('open'); mapOverlay.classList.remove('open');
+  mapDrawer.setAttribute('aria-hidden','true'); mapToggle.setAttribute('aria-expanded','false');
+}
+mapToggle.addEventListener('click', openMap);
+mapClose.addEventListener('click', closeMap);
+mapOverlay.addEventListener('click', closeMap);
+document.getElementById('mapDrawer').querySelectorAll('.map-sub a').forEach(a => a.addEventListener('click', closeMap));
+addEventListener('keydown', e => { if (e.key === 'Escape') closeMap(); });
+
+/* ============================================================
+   מצב עריכה למורה — טקסט עם שמירה מקומית (localStorage)
+   כל עריכה נשמרת בדפדפן של המחשב הזה בלבד.
+   "הורד קובץ עדכון" מייצא JSON קטן שאפשר להעביר למחשב אחר
+   ולטעון שם עם "טען קובץ עדכון" — כך העדכונים עוברים בין מחשבים.
+   ============================================================ */
+const OV_KEY = 'madaey_hachomer_overrides_v1';
+const EDITABLE_SELECTOR = [
+  '.hero-copy h1','.hero-badge','.hero-sub','.hero-meta span',
+  '.kicker','.lead','h2','h3','.note-inline',
+  '.riddle .tag','.riddle q','.riddle .think',
+  '.eq .term','.unit-chip b','.unit-chip span',
+  '.mol-card h3','.mol-card p','.mol-def',
+  '.activity-box b','.activity-box p',
+  '.tbl-task th','.tbl-task td','.chip',
+  '.sd-num','.stage-step',
+  '.plane','.take-list li > div','.bh',
+  'footer p'
+].join(',');
+
+function editableCandidates(){
+  return [...document.querySelectorAll(EDITABLE_SELECTOR)]
+    .filter(el => !el.id && !el.querySelector('[id]'));
+}
+function ensureKeys(){
+  editableCandidates().forEach((el, i) => { if (!el.dataset.ek) el.dataset.ek = 'ek' + i; });
+}
+function loadOverrides(){
+  try { return JSON.parse(localStorage.getItem(OV_KEY) || '{}'); } catch(e){ return {}; }
+}
+function applyOverrides(map){
+  editableCandidates().forEach(el => {
+    const v = map[el.dataset.ek];
+    if (v != null) el.innerHTML = v;
+  });
+}
+function saveAllToLocal(){
+  const map = loadOverrides();
+  editableCandidates().forEach(el => { map[el.dataset.ek] = el.innerHTML; });
+  localStorage.setItem(OV_KEY, JSON.stringify(map));
+  flashNote('נשמר במחשב הזה');
+}
+let noteTimer;
+function flashNote(msg){
+  const n = document.getElementById('editNote');
+  n.textContent = msg; n.classList.add('show');
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => n.classList.remove('show'), 1800);
+}
+
+/* החלת עדכונים שמורים כבר בטעינת הדף — גם מחוץ למצב עריכה */
+ensureKeys();
+applyOverrides(loadOverrides());
+
+const editToggle = document.getElementById('editToggle');
+const editBar = document.getElementById('editBar');
+let saveDebounce;
+function setEditMode(on){
+  document.body.classList.toggle('edit-mode', on);
+  editToggle.classList.toggle('active', on);
+  editToggle.textContent = on ? '🔒 צאו ממצב עריכה' : '✏️ מצב עריכה למורה';
+  ensureKeys();
+  editableCandidates().forEach(el => el.setAttribute('contenteditable', on ? 'true' : 'false'));
+}
+editToggle.addEventListener('click', () => setEditMode(!document.body.classList.contains('edit-mode')));
+document.getElementById('editDone').addEventListener('click', () => setEditMode(false));
+
+document.addEventListener('input', (e) => {
+  if (!document.body.classList.contains('edit-mode')) return;
+  if (!e.target.closest || !e.target.closest('[data-ek]')) return;
+  clearTimeout(saveDebounce);
+  saveDebounce = setTimeout(saveAllToLocal, 600);
+});
+
+document.getElementById('editSave').addEventListener('click', () => {
+  saveAllToLocal();
+  const payload = { generatedAt: new Date().toISOString(), overrides: loadOverrides() };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'מדעי-החומר-עדכוני-טקסט.json';
+  a.click();
+  flashNote('קובץ ההורדה יצא — אפשר להעביר אותו למחשב אחר');
+});
+
+document.getElementById('editLoad').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const current = loadOverrides();
+      const merged = { ...current, ...(data.overrides || data) };
+      localStorage.setItem(OV_KEY, JSON.stringify(merged));
+      applyOverrides(merged);
+      flashNote('קובץ העדכון נטען בהצלחה');
+    } catch(err){ alert('הקובץ לא תקין. ודאו שזה קובץ JSON שיצא מהדף הזה.'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+document.getElementById('editReset').addEventListener('click', () => {
+  if (!confirm('לאפס את כל הטקסט לגרסה המקורית במחשב הזה? אי אפשר לבטל פעולה זו.')) return;
+  localStorage.removeItem(OV_KEY);
+  location.reload();
+});
 </script>
 </body>
 </html>
